@@ -6,7 +6,6 @@ const {
 	GraphQLString,
 	GraphQLSchema,
 	GraphQLID,
-	GraphQLInt,
 	GraphQLList,
 	GraphQLNonNull
 } = graphql;
@@ -14,13 +13,22 @@ const {
 const PostType = new GraphQLObjectType({
 	name: "Post",
 	fields: () => ({
-		id: { type: GraphQLID },
-		title: { type: GraphQLString },
-		description: { type: GraphQLString },
+		id: { 
+			type: GraphQLID 
+		},
+		title: { 
+			type: GraphQLString 
+		},
+		description: { 
+			type: GraphQLString 
+		},
+		userId: {
+			type: GraphQLID
+		},
 		user: {
 			type: UserType,
-			resolve(parent, args) {
-				return User.findById(parent.userId);
+			resolve({ userId }, args) {
+				return User.findById(userId);
 			}
 		}
 	})
@@ -33,8 +41,10 @@ const UserType = new GraphQLObjectType({
 		name: { type: GraphQLString },
 		posts: {
 			type: new GraphQLList(PostType),
-			resolve(parent, args) {
-				return Post.findById({ userId: parent.id });
+			resolve({ id }, args) {
+				return Post.find({
+					userId: id
+				})
 			}
 		}
 	})
@@ -50,24 +60,24 @@ const RootQuery = new GraphQLObjectType({
 				return Post.findById(args.id);
 			}
 		},
-		user: {
-			type: UserType,
-			args: { id: { type: GraphQLID } },
-			resolve(parent, args) {
-				return User.findById(args.id);
-			}
-		},
 		posts: {
 			type: new GraphQLList(PostType),
 			resolve(parent, args) {
-				return Book.find({});
+				return Post.find({});
+			}
+		},
+		user: {
+			type: UserType,
+			args: { userId: { type: GraphQLID }},
+			resolve(parent, { userId }) {
+				return User.findById(userId);
 			}
 		},
 		users: {
 			type: new GraphQLList(UserType),
 			resolve(parent, args) {
 				return User.find({});
-			}	
+			}
 		}
 	}
 });
@@ -75,12 +85,30 @@ const RootQuery = new GraphQLObjectType({
 const Mutation = new GraphQLObjectType({
 	name: "Mutation",
 	fields: {
+		addUser: {
+			type: UserType,
+			args: {
+				name: {
+					type: new GraphQLNonNull(GraphQLString)
+				}
+			},
+			resolve(parent, { name }) {
+				let user = new User({ name });
+				return user.save();
+			}
+		},
 		addPost: {
 			type: PostType,
 			args: {
-				title: { type: new GraphQLNonNull(GraphQLString) },
-				description: { type: new GraphQLNonNull(GraphQLString) },
-				userId: { type: new GraphQLNonNull(GraphQLID) }
+				title: { 
+					type: new GraphQLNonNull(GraphQLString) 
+				},
+				description: { 
+					type: new GraphQLNonNull(GraphQLString) 
+				},
+				userId: {
+					type: new GraphQLNonNull(GraphQLID)
+				}
 			},
 			resolve(parent, { title, description, userId }) {
 				const post = new Post({
@@ -91,16 +119,13 @@ const Mutation = new GraphQLObjectType({
 				return post.save();
 			}
 		},
-		addUser: {
-			type: UserType,
+		deletePost: {
+			type: PostType,
 			args: {
-				name: { type: new GraphQLNonNull(GraphQLString) }
+				postId: { type: new GraphQLNonNull(GraphQLID) }
 			},
-			resolve(parent, { name }) {
-				const user = new User({
-					name
-				});
-				return user.save();
+			resolve(parent, { postId }) {
+				return Post.deleteOne({ _id: postId });
 			}
 		}
 	}

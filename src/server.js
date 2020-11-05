@@ -2,6 +2,11 @@ const express = require("express");
 const cors = require("cors");
 const {graphqlHTTP} = require("express-graphql");
 const schema = require("./schema/schema");
+const db = require("./config/db");
+require("dotenv").config();
+
+// database connection
+db.makeDb();
 
 const app = express();
 

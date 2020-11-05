@@ -1,0 +1,45 @@
+.add_post_wrapper {
+	margin-top: 50px;
+}
+
+.add_post_wrapper input, .add_post_wrapper textarea {
+	width: 100%;
+}
+
+.add_post_wrapper input {
+	width: 100%;
+	padding: 12px 20px;
+	margin: 8px 0;
+	box-sizing: border-box;
+}
+
+.add_post_wrapper .post_btn {
+	background-color: #4CAF50; /* Green */
+  border: none;
+  color: white;
+  padding: 7px 32px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  margin: 4px 2px;
+	cursor: pointer;
+	width: 100%;
+	font-size: 18px;
+	border-radius: 5px;
+}
+
+.users_list_select {
+  display: inline-block;
+  box-sizing: border-box;
+  padding: 0.5em 2em 0.5em 0.5em;
+  font: inherit;
+  line-height: inherit;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  -ms-appearance: none;
+  appearance: none;
+  background-repeat: no-repeat;
+  background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%);
+  background-position: right 15px top 1em, right 10px top 1em;
+  background-size: 5px 5px, 5px 5px;
+}

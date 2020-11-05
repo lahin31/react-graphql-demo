@@ -12,7 +12,7 @@ const postSchema = new Schema({
 	},
 	userId: {
 		type: String,
-    required: false,
+		required: false
 	}
 });
 
