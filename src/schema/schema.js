@@ -1,6 +1,8 @@
 const graphql = require("graphql");
+const dataLoader = require("dataloader");
 const Post = require("../models/post");
 const User = require("../models/user");
+const DataLoader = require("dataloader");
 const {
 	GraphQLObjectType,
 	GraphQLString,
@@ -9,6 +11,19 @@ const {
 	GraphQLList,
 	GraphQLNonNull
 } = graphql;
+
+/**
+ * A user can have multiple posts so we implement this posts loader
+ */
+const postsLoader = new DataLoader(async userIds => {
+	let posts = await Post.find({});
+
+	let result = userIds.map(u_id => {
+		return posts.filter( post => post.userId === u_id )
+	});
+	
+	return result;
+});
 
 const PostType = new GraphQLObjectType({
 	name: "Post",
@@ -42,9 +57,7 @@ const UserType = new GraphQLObjectType({
 		posts: {
 			type: new GraphQLList(PostType),
 			resolve({ id }, args) {
-				return Post.find({
-					userId: id
-				})
+				return postsLoader.load(id);
 			}
 		}
 	})
